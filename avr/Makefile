@@ -1,9 +1,9 @@
 ###### User settings ######
 
-TOOLROOT = /home/matt/opt/Arduino/arduino-1.8.7/hardware/tools/avr
+TOOLROOT = /mnt/d/Documents/AASCHOOL/box/arduino-1.8.7/hardware/tools/avr
 PRG = $(notdir $(CURDIR))
 USRSRCS = main.c
-LIBSSRCS = command.c uart.c spi.c i2c.c
+LIBSSRCS = command.c uart.c spi.c i2c.c servo.c
 
 # Directory locations
 OBJDIR = bin

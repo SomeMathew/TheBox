@@ -2,10 +2,12 @@
 #include <avr/sfr_defs.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "main.h"
 #include "uart.h"
 #include "defineConfig.h"
 #include "command.h"
+#include "servo.h"
 
 #define SERIAL_INPUT_BUFFER_SIZE 32
 
@@ -15,13 +17,19 @@ static void processSerialInput(void);
 
 static void pong(char *);
 
+static void move(char *);
+
+static void read();
 
 static struct Command optList[] = {
-  {"ping", pong, false}, // Alive check and debug
+  {"ping", pong, true}, // Alive check and debug
+  {"move", move, true},
+  {"read", read, false}
 }; 
 
 int main() {
 	setup();
+
 	while(1) {
 		loop();
 	}
@@ -31,6 +39,8 @@ int main() {
 void setup() {
 	uart_open(UART_BAUD_RATE, UART_DIRECTION, UART_PARITY, UART_FRAME_SIZE, UART_STOPBIT);
 	command_setup(optList, LENGTH_OF_ARRAY(optList));
+	servo_init();
+	servo_channel_init(SERVO_CHANNELA);
 	sei();
 }
 
@@ -62,5 +72,21 @@ static void processSerialInput(void) {
  * Responds to a ping request.
  */
 static void pong(char * arg) {
-	fprintf(&uartStream, "Pong!\n");
+	uint8_t i = atoi(arg);
+	fprintf(&uartStream, "Pong! %" PRIu8 "\n", i);
+}
+
+/**
+ * Moves servo on channel A to desired angle
+ */
+static void move(char * arg) {
+	int i = atoi(arg);
+	servo_write(SERVO_CHANNELA, i);
+}
+
+/**
+ * Moves servo on channel A to desired angle
+ */
+static void read() {
+	fprintf(&uartStream, "%ld\n", servo_read(SERVO_CHANNELA));
 }

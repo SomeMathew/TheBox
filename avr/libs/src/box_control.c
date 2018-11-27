@@ -10,7 +10,7 @@ int box_init() {
     /* TODO - may want to add check to see if open or close, and adjust motors accordingly
             - for now, I'll leave with assuming the box is closed and locked beforehand */
     success -= servo_init();
-    success -= servo_channel_init_angle(LOCK_MOTOR, LOCK_LOCKED_POSITION);
+    // TODO once I have lock in place success -= servo_channel_init_angle(LOCK_MOTOR, LOCK_LOCKED_POSITION);
     success -= servo_channel_init_angle(LID_MOTOR, LID_CLOSED_POSITION);
 
     return success;
@@ -70,7 +70,7 @@ int box_open() {
  */
 int box_isOpen() {
     //TODO implement
-    return 1;
+    return 0;
 }
 
 /**
@@ -79,5 +79,5 @@ int box_isOpen() {
  */
 int box_isClosed() {
     // TODO implement
-    return 1;
+    return 0;
 }

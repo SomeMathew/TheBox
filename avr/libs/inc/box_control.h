@@ -14,7 +14,7 @@
 #define LOCK_LOCKED_POSITION 90
 
 // Positions for the box lid
-#define LID_CLOSED_POSITION 120
+#define LID_CLOSED_POSITION 180
 #define LID_OPEN_POSITION 30
 
 /**

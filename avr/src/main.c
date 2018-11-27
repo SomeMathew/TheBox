@@ -7,7 +7,7 @@
 #include "uart.h"
 #include "defineConfig.h"
 #include "command.h"
-#include "servo.h"
+#include "box_control.h"
 
 #define SERIAL_INPUT_BUFFER_SIZE 32
 
@@ -17,13 +17,15 @@ static void processSerialInput(void);
 
 static void pong(char *);
 
-static void move(char *);
+static void open();
+static void close();
 
 static void read();
 
 static struct Command optList[] = {
   {"ping", pong, true}, // Alive check and debug
-  {"move", move, true},
+  {"open", open, false},
+  {"close", close, false},
   {"read", read, false}
 }; 
 
@@ -39,8 +41,7 @@ int main() {
 void setup() {
 	uart_open(UART_BAUD_RATE, UART_DIRECTION, UART_PARITY, UART_FRAME_SIZE, UART_STOPBIT);
 	command_setup(optList, LENGTH_OF_ARRAY(optList));
-	servo_init();
-	servo_channel_init(SERVO_CHANNELA);
+	box_init();
 	sei();
 }
 
@@ -89,4 +90,12 @@ static void move(char * arg) {
  */
 static void read() {
 	fprintf(&uartStream, "%ld\n", servo_read(SERVO_CHANNELA));
+}
+
+static void open() {
+	box_open();
+}
+
+static void close() {
+	box_close();
 }

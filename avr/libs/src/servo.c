@@ -35,7 +35,7 @@ int servo_init() {
  * @return 0 on success, negative on error
  */
 int servo_channel_init(int channel) {
-    return servo_channel_init_angle(channel, NEUTRAL);
+    return servo_channel_init_angle(channel, 90);
 }
 
 /**
@@ -50,14 +50,14 @@ int servo_channel_init_angle(int channel, int angle) {
         TCCR1A |= (1 << COM1A1);
 
         // Set the initial position and turn on output
-        OCR1A = angle;
+        OCR1A = BASE_VALUE + ((long) angle * UNITS_PER_DEGREE);
         DDRB |= (1 << PB1); // This corresponds to OC1A, the pin labelled D9 on the breadboard
     } else if(channel == SERVO_CHANNELB) {
         // Clear OC1x on Compare Match and set at bottom
         TCCR1A |= (1 << COM1B1);
 
         // Set the initial position and turn on output
-        OCR1B = angle;
+        OCR1B = BASE_VALUE + ((long) angle * UNITS_PER_DEGREE);
         DDRB |= (1 << PB2); // This corresponds to OC1B, the pin labelled D9 on the breadboard
     } else {
         // Invalid channel, return -1

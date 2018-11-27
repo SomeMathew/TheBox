@@ -26,11 +26,19 @@
 int servo_init();
 
 /**
- * Initializes the desired channel for a servo motor
+ * Initializes the desired channel for a servo motor at neutral
  * 
  * @return 0 on success, negative on error
  */
 int servo_channel_init(int channel);
+
+/**
+ * Initializes the desired channel for a servo motor with the indicated
+ * starting angle
+ * 
+ * @return 0 on success, negative on error
+ */
+int servo_channel_init_angle(int channel, int angle);
 
 /**
  * Moves the requested servo motor to the desired angle. Must be a value between 0 and 180

@@ -30,24 +30,34 @@ int servo_init() {
 }
 
 /**
- * Initializes the desired channel for a servo motor
+ * Initializes the desired channel for a servo motor at neutral
  * 
  * @return 0 on success, negative on error
  */
 int servo_channel_init(int channel) {
+    return servo_channel_init_angle(channel, NEUTRAL);
+}
+
+/**
+ * Initializes the desired channel for a servo motor with the indicated
+ * starting angle
+ * 
+ * @return 0 on success, negative on error
+ */
+int servo_channel_init_angle(int channel, int angle) {
     if(channel == SERVO_CHANNELA) {
         // Clear OC1x on Compare Match and set at bottom
         TCCR1A |= (1 << COM1A1);
 
-        // Set the initial position to Neutral, and turn on output
-        OCR1A = NEUTRAL;
+        // Set the initial position and turn on output
+        OCR1A = angle;
         DDRB |= (1 << PB1); // This corresponds to OC1A, the pin labelled D9 on the breadboard
     } else if(channel == SERVO_CHANNELB) {
         // Clear OC1x on Compare Match and set at bottom
         TCCR1A |= (1 << COM1B1);
 
-        // Set the initial position to Neutral, and turn on output
-        OCR1B = NEUTRAL;
+        // Set the initial position and turn on output
+        OCR1B = angle;
         DDRB |= (1 << PB2); // This corresponds to OC1B, the pin labelled D9 on the breadboard
     } else {
         // Invalid channel, return -1

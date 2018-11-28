@@ -24,6 +24,4 @@
 #define BOX_SWITCH_PIN	PINC
 #define BOX_SWITCH_IO	PC3
 
-#define 
-
 #endif /* _DEV_IO_CONFIG_H */

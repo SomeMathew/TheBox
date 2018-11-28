@@ -39,4 +39,9 @@ static inline void ioctl_toggle(volatile uint8_t * portReg, uint8_t io) {
 	*portReg ^= _BV(io);
 } 
 
+static inline void ioctl_tristate(volatile uint8_t * ddrReg, volatile uint8_t * portReg, uint8_t io) {
+	*portReg &= ~(_BV(io));
+	*ddrReg &= ~(_BV(io));
+}
+
 #endif /* _DEV_IOCTL_H */

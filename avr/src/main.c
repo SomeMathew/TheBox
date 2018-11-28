@@ -21,6 +21,7 @@ static void moveA(char *);
 static void moveB(char *);
 
 static void open();
+static void isOpen();
 static void close();
 static void lock();
 static void unlock();
@@ -32,6 +33,7 @@ static struct Command optList[] = {
   {"moveA", moveA, true},
   {"moveB", moveB, true},
   {"open", open, false},
+  {"isOpen", isOpen, false},
   {"close", close, false},
   {"lock", lock, false},
   {"unlock", unlock, false},
@@ -112,6 +114,13 @@ static void read() {
 
 static void open() {
 	box_open();
+}
+
+/**
+ * Moves servo on channel A to desired angle
+ */
+static void isOpen() {
+	fprintf(&uartStream, "Is switch open? %d %d\n", box_isOpen(), box_isClosed());
 }
 
 static void close() {

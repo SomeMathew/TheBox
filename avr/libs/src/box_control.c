@@ -1,5 +1,7 @@
 #include "box_control.h"
 #include "util/delay.h"
+#include "pin_config.h"
+#include "ioctl.h"
 
 /**
  * Initializes the box for use by preparing its motors
@@ -7,12 +9,17 @@
 int box_init() {
     int success = 0;
 
+    //Initialize the reed switch
+    ioctl_setdir(&BOX_SWITCH_DDR, BOX_SWITCH_IO, INPUT);
+    ioctl_pullup(&BOX_SWITCH_PORT, BOX_SWITCH_IO);
+
     // Initialize the servo motors
-    /* TODO - may want to add check to see if open or close, and adjust motors accordingly
-            - for now, I'll leave with assuming the box is closed and locked beforehand */
+
     success -= servo_init();
     success -= servo_channel_init_angle(LID_MOTOR, LID_CLOSED_POSITION);
-    _delay_ms(1000); // TODO maybe remove
+    while(box_isOpen()) {
+        // Wait
+    };
     success -= servo_channel_init_angle(LOCK_MOTOR, LOCK_LOCKED_POSITION);
 
     return success;
@@ -71,8 +78,7 @@ int box_open() {
  * @return 1 if open, 0 if not
  */
 int box_isOpen() {
-    //TODO implement
-    return 0;
+    return ioctl_read(&BOX_SWITCH_PIN, BOX_SWITCH_IO);
 }
 
 /**
@@ -80,6 +86,9 @@ int box_isOpen() {
  * @return 1 if closed, 0 if open
  */
 int box_isClosed() {
-    // TODO implement
-    return 0;
+    if(box_isOpen()) {
+        return 0;
+    } else {
+        return 1;
+    }
 }

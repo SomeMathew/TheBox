@@ -10,8 +10,8 @@
 #define LOCK_MOTOR SERVO_CHANNELB
 
 // Positions for the box lock
-#define LOCK_UNLOCKED_POSITION 0
-#define LOCK_LOCKED_POSITION 90
+#define LOCK_UNLOCKED_POSITION 90
+#define LOCK_LOCKED_POSITION 0
 
 // Positions for the box lid
 #define LID_CLOSED_POSITION 180

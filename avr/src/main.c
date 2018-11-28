@@ -8,6 +8,7 @@
 #include "defineConfig.h"
 #include "command.h"
 #include "box_control.h"
+#include "servo.h"
 
 #define SERIAL_INPUT_BUFFER_SIZE 32
 
@@ -16,16 +17,24 @@ static void loop();
 static void processSerialInput(void);
 
 static void pong(char *);
+static void moveA(char *);
+static void moveB(char *);
 
 static void open();
 static void close();
+static void lock();
+static void unlock();
 
 static void read();
 
 static struct Command optList[] = {
   {"ping", pong, true}, // Alive check and debug
+  {"moveA", moveA, true},
+  {"moveB", moveB, true},
   {"open", open, false},
   {"close", close, false},
+  {"lock", lock, false},
+  {"unlock", unlock, false},
   {"read", read, false}
 }; 
 
@@ -80,16 +89,25 @@ static void pong(char * arg) {
 /**
  * Moves servo on channel A to desired angle
  */
-static void move(char * arg) {
+static void moveA(char * arg) {
 	int i = atoi(arg);
 	servo_write(SERVO_CHANNELA, i);
+}
+
+/**
+ * Moves servo on channel B to desired angle
+ */
+static void moveB(char * arg) {
+	int i = atoi(arg);
+	fprintf(&uartStream, " Moving %d\n", i);
+	servo_write(SERVO_CHANNELB, i);
 }
 
 /**
  * Moves servo on channel A to desired angle
  */
 static void read() {
-	fprintf(&uartStream, "%ld\n", servo_read(SERVO_CHANNELA));
+	fprintf(&uartStream, "%ld\n", servo_read(SERVO_CHANNELB));
 }
 
 static void open() {
@@ -98,4 +116,12 @@ static void open() {
 
 static void close() {
 	box_close();
+}
+
+static void lock() {
+	box_lock();
+}
+
+static void unlock() {
+	box_unlock();
 }

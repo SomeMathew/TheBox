@@ -1,4 +1,5 @@
 #include "box_control.h"
+#include "util/delay.h"
 
 /**
  * Initializes the box for use by preparing its motors
@@ -10,8 +11,9 @@ int box_init() {
     /* TODO - may want to add check to see if open or close, and adjust motors accordingly
             - for now, I'll leave with assuming the box is closed and locked beforehand */
     success -= servo_init();
-    // TODO once I have lock in place success -= servo_channel_init_angle(LOCK_MOTOR, LOCK_LOCKED_POSITION);
     success -= servo_channel_init_angle(LID_MOTOR, LID_CLOSED_POSITION);
+    _delay_ms(1000); // TODO maybe remove
+    success -= servo_channel_init_angle(LOCK_MOTOR, LOCK_LOCKED_POSITION);
 
     return success;
 }

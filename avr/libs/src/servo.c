@@ -3,7 +3,24 @@
  */
 
 #include "servo.h"
-#include <avr/io.h>
+#include "pin_config.h"
+#include "ioctl.h"
+#include <avr/interrupt.h>
+
+
+// ISR to set pulse to ServoB on overflow
+ISR(TIMER1_OVF_vect) {
+    cli();
+    ioctl_write(&SERVO_B_PORT, SERVO_B_IO, 1);
+    sei();
+}
+
+// ISR to clear pulse to ServoB on CompareMatch
+ISR(TIMER1_COMPB_vect) {
+    cli();
+    ioctl_write(&SERVO_B_PORT, SERVO_B_IO, 0);
+    sei();
+}
 
 /**
  * Initializes the Servo library by setting up Timer1
@@ -51,14 +68,17 @@ int servo_channel_init_angle(int channel, int angle) {
 
         // Set the initial position and turn on output
         OCR1A = BASE_VALUE + ((long) angle * UNITS_PER_DEGREE);
-        DDRB |= (1 << PB1); // This corresponds to OC1A, the pin labelled D9 on the breadboard
+        ioctl_setdir(&SERVO_A_DDR, SERVO_A_IO, OUTPUT);
     } else if(channel == SERVO_CHANNELB) {
-        // Clear OC1x on Compare Match and set at bottom
-        TCCR1A |= (1 << COM1B1);
+        // Don't want to touch OC1B, so won't set anything for it!
+
+        // Turn on the interrupts!
+        TIMSK1 |= (1 << OCIE1B);
+        TIMSK1 |= (1 << TOIE1);
 
         // Set the initial position and turn on output
         OCR1B = BASE_VALUE + ((long) angle * UNITS_PER_DEGREE);
-        DDRB |= (1 << PB2); // This corresponds to OC1B, the pin labelled D9 on the breadboard
+        ioctl_setdir(&SERVO_B_DDR, SERVO_B_IO, OUTPUT);
     } else {
         // Invalid channel, return -1
         return -1;

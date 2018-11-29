@@ -1,5 +1,3 @@
-// TODO explain
-
 #ifndef _DEV_BOX_CONTROL_H
 #define _DEV_BOX_CONTROL_H
 

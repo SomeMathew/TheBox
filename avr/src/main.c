@@ -9,6 +9,7 @@
 #include "command.h"
 #include "box_control.h"
 #include "servo.h"
+#include "bbb_commands.h"
 
 #define SERIAL_INPUT_BUFFER_SIZE 32
 
@@ -26,7 +27,8 @@ static void close();
 static void lock();
 static void unlock();
 
-static void read();
+static void bbbOpen();
+static void bbbClose();
 
 static struct Command optList[] = {
   {"ping", pong, true}, // Alive check and debug
@@ -37,7 +39,8 @@ static struct Command optList[] = {
   {"close", close, false},
   {"lock", lock, false},
   {"unlock", unlock, false},
-  {"read", read, false}
+  {"bbbOpen", bbbOpen, false},
+  {"bbbClose", bbbClose, false}
 }; 
 
 int main() {
@@ -89,7 +92,7 @@ static void pong(char * arg) {
 }
 
 /**
- * Moves servo on channel A to desired angle
+ * Moves servo on channel A to desired angle. This is lid motor.
  */
 static void moveA(char * arg) {
 	int i = atoi(arg);
@@ -97,19 +100,12 @@ static void moveA(char * arg) {
 }
 
 /**
- * Moves servo on channel B to desired angle
+ * Moves servo on channel B to desired angle. This is lock motor.
  */
 static void moveB(char * arg) {
 	int i = atoi(arg);
 	fprintf(&uartStream, " Moving %d\n", i);
 	servo_write(SERVO_CHANNELB, i);
-}
-
-/**
- * Moves servo on channel A to desired angle
- */
-static void read() {
-	fprintf(&uartStream, "%ld\n", servo_read(SERVO_CHANNELB));
 }
 
 static void open() {
@@ -120,7 +116,7 @@ static void open() {
  * Moves servo on channel A to desired angle
  */
 static void isOpen() {
-	fprintf(&uartStream, "Is switch open? %d %d\n", box_isOpen(), box_isClosed());
+	fprintf(&uartStream, "Is switch open? %d\n", cmd_getStatus());
 }
 
 static void close() {
@@ -133,4 +129,12 @@ static void lock() {
 
 static void unlock() {
 	box_unlock();
+}
+
+static void bbbOpen() {
+	cmd_openBox();
+}
+
+static void bbbClose() {
+	cmd_closeBox();
 }

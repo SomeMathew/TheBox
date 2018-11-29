@@ -34,7 +34,12 @@ int box_unlock() {
         return -1;
     }
 
-    return servo_write(LOCK_MOTOR, LOCK_UNLOCKED_POSITION);
+    int success = 0;
+    for(int angle = LOCK_LOCKED_POSITION; angle <= LOCK_UNLOCKED_POSITION; angle += 30) {
+        success -= servo_write(LOCK_MOTOR, angle);
+        _delay_ms(105); // 0.21 s / 60 deg * 30 deg
+    }
+    return success;
 }
 
 /**

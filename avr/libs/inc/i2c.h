@@ -51,6 +51,42 @@ int i2c_slave_transmit(uint8_t *data, size_t size);
 int i2c_master_receive(uint8_t addr8, uint8_t *dataBuffer, size_t size);
 
 /**
+ * Transmit data in Master Transmitter Mode.
+ * This is a blocking implementation.
+ * 
+ * @param addr8 Address of the Slave to write, in 8 bit format.
+ * @param dataBuffer Buffer to read the data from
+ * @param size Size of the transmition
+ * 
+ * @returns -1 on error
+ */
+int i2c_master_transmit(uint8_t addr8, uint8_t *dataBuffer, size_t size);
+
+
+/**
+ * Read a register from the slave device.
+ * This is a blocking implementation.
+ * 
+ * @param addr8 Address of the Slave to read, in 8 bit format.
+ * @param reg Register to read from the device.
+ * @param dataBuffer Buffer to receive the data to
+ * @param size Size of the transmition
+ */
+int i2c_master_read(uint8_t addr8, uint8_t reg, uint8_t *dataBuffer, size_t size);
+
+/**
+ * Write a register of the slave device.
+ * This is a blocking implementation.
+ * 
+ * @param addr8 Address of the Slave to write, in 8 bit format.
+ * @param reg Register to read to on the device.
+ * @param dataBuffer Buffer to read the data from
+ * @param size Size of the transmition
+ */
+int i2c_master_write(uint8_t addr8, uint8_t reg, uint8_t *dataBuffer, size_t size);
+
+
+/**
  * Attach an interrupt vector to be called when configured as i2c and that
  * the device SLA+R is called.
  * 

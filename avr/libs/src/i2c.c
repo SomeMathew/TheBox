@@ -89,7 +89,7 @@ int i2c_slave_init(uint8_t addr8) {
 int i2c_master_receive(uint8_t addr8, uint8_t *dataBuffer, size_t size) {
 	i2c_start();
 	i2c_waitForComplete();
-	if(TW_STATUS != TW_START) {
+	if(TW_STATUS != TW_START || TW_STATUS != TW_REP_START) {
 		status = TW_STATUS;
 		return -1; 
 	}
@@ -98,6 +98,56 @@ int i2c_master_receive(uint8_t addr8, uint8_t *dataBuffer, size_t size) {
 	
 	for (int i = 0; i < size; i++) {
 		dataBuffer[i] = (i < size-1) ? i2c_readAck() : i2c_readNoAck();
+	}
+
+	i2c_stop();
+	
+	return 0;
+}
+
+/**
+ * Read a register from the slave device.
+ * This is a blocking implementation.
+ * 
+ * @param addr8 Address of the Slave to read, in 8 bit format.
+ * @param reg Register to read from the device.
+ * @param dataBuffer Buffer to receive the data to
+ * @param size Size of the transmition
+ */
+int i2c_master_read(uint8_t addr8, uint8_t reg, uint8_t *dataBuffer, size_t size) {
+	i2c_start();
+	i2c_waitForComplete();
+		if(TW_STATUS != TW_START) {
+		status = TW_STATUS;
+		return -1; 
+	}
+	i2c_sendNoAck(addr8 & ~_BV(0)); // SLA+W
+	i2c_sendNoAck(reg);
+	// Now receive from the register, will issue a repeated start
+	return i2c_master_receive(addr8, dataBuffer, size); 
+}
+
+/**
+ * Write a register of the slave device.
+ * This is a blocking implementation.
+ * 
+ * @param addr8 Address of the Slave to write, in 8 bit format.
+ * @param reg Register to read to on the device.
+ * @param dataBuffer Buffer to read the data from
+ * @param size Size of the transmition
+ */
+int i2c_master_write(uint8_t addr8, uint8_t reg, uint8_t *dataBuffer, size_t size) {
+	i2c_start();
+	i2c_waitForComplete();
+		if(TW_STATUS != TW_START) {
+		status = TW_STATUS;
+		return -1; 
+	}
+	i2c_sendNoAck(addr8 | _BV(1)); // SLA+W
+	i2c_sendNoAck(reg);
+	
+	for (int i = 0; i < size; i++) {
+		i2c_sendNoAck(dataBuffer[i]);
 	}
 
 	i2c_stop();

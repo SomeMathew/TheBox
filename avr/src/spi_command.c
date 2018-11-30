@@ -182,7 +182,24 @@ static void checkAndCallVector(uint8_t cmd) {
  * 
  * This will be called if the callback are not reimplemented for use.
  */
-void spi_cmd_none(void)
-{
-	// STUB
+int spicmd_callback_unlockopen(void) {
+	return -1;
+}
+
+/**
+ * Stub alias for the weak function vector declared in the header.
+ * 
+ * This will be called if the callback are not reimplemented for use.
+ */
+int spicmd_callback_closelock(void) {
+	return -1;
+}
+
+/**
+ * Stub alias for the weak function vector declared in the header.
+ * 
+ * This will be called if the callback are not reimplemented for use.
+ */
+int spicmd_callback_checkstatus(void) {
+	return -1;
 }

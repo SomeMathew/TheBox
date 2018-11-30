@@ -39,8 +39,9 @@ int spicmd_init();
  */
 int spicmd_send(uint8_t cmd);
 
-int spicmd_callback_unlockopen() __attribute__((weak, alias("spi_cmd_none")));
-int spicmd_callback_closelock() __attribute__((weak, alias("spi_cmd_none")));
-int spicmd_callback_checkstatus() __attribute__((weak, alias("spi_cmd_none")));
+
+int spicmd_callback_unlockopen(void) __attribute__((weak));
+int spicmd_callback_closelock(void) __attribute__((weak));
+int spicmd_callback_checkstatus(void) __attribute__((weak));
 
 #endif /* _DEV_SPI_CMD_H */

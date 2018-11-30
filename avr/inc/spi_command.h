@@ -12,23 +12,30 @@
 #define SPICMD_NACK 		(0xFB)
 
 
-#define SPICMD_OK 				(0)
-#define SPICMD_ERR_BUSY 		(1)
-#define SPICMD_ERR_UNEXPECTED 	(2)
-#define SPICMD_ERR_NOTINIT 		(3)
+#define SPICMD_OK 				(0xFA)
+#define SPICMD_ERR_BUSY 		(0xFD)
+#define SPICMD_ERR_UNEXPECTED 	(0xFB)
+#define SPICMD_ERR_NOTINIT 		(0xFC)
 
 
 /**
- * Initializes the module and the attached SPI interface
+ * Initializes the spi_command module for the interface between the BBB
+ * and the AVR.
+ * 
+ * This initializes the Status GPIO to tristated and initializes the
+ * SPI peripheral as slave.
  * 
  * @returns SPICMD_OK or SPICMD_ERR_*
  */
 int spicmd_init();
 
 /**
- * Send a status to the attached device through the status GPIO feedback.
+ * Send a status or command to the attached device through the status 
+ * GPIO feedback.
  * 
  * @param cmd SPICMD_BBB_* or SPICMD_RESP_*
+ * 
+ * @return SPICMD_OK or SPICMD_ERR_*
  */
 int spicmd_send(uint8_t cmd);
 

@@ -23,17 +23,18 @@
 
 typedef uint8_t State;
 
-static uint8_t outputBuffer[OUTPUT_BUFFER_SIZE];
-static volatile size_t outputBufferHead = 0;
-static volatile size_t outputBufferTail = 0;
-
-static volatile State state = STATE_OFF; 
 
 static void spiVector(void);
 static void pullLowFromTriState(void);
 static void prepareWaitingCommand(void);
 static int addToBuffer(uint8_t c);
 static void checkAndCallVector(uint8_t cmd);
+
+static uint8_t outputBuffer[OUTPUT_BUFFER_SIZE];
+static volatile size_t outputBufferHead = 0;
+static volatile size_t outputBufferTail = 0;
+
+static volatile State state = STATE_OFF; 
 
 static inline bool commandBufferIsEmpty() {
 	return outputBufferHead == outputBufferTail;

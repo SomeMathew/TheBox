@@ -24,4 +24,9 @@
 #define BOX_SWITCH_PIN	PINC
 #define BOX_SWITCH_IO	PC3
 
+#define ACCEL_INT_DDR	DDRD
+#define ACCEL_INT_PORT	PORTD
+#define ACCEL_INT_PIN	PIND
+#define ACCEL_INT_IO	PD6
+
 #endif /* _DEV_IO_CONFIG_H */

@@ -10,10 +10,10 @@
 
 #define OUTPUT_BUFFER_SIZE 8
 
-#define STATE_OFF 					(0)
-#define STATE_WAIT 					(1)
-#define STATE_CMD_SENT 				(2)
-#define STATE_ACKED 				(6)
+#define STATE_OFF 			(0)
+#define STATE_WAIT 			(1)
+#define STATE_CMD_SENT 		(2)
+#define STATE_ACKED 		(6)
 
 #define CMD_IN_UNLOCK_OPEN 	(0xA1)
 #define CMD_IN_LOCK_CLOSE 	(0xA2)
@@ -22,7 +22,6 @@
 #define CMD_IN_GET_STATUS	(0xC1)
 
 typedef uint8_t State;
-
 
 static void spiVector(void);
 static void pullLowFromTriState(void);

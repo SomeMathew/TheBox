@@ -11,6 +11,8 @@
 #include "servo.h"
 #include "bbb_commands.h"
 #include "spi_command.h"
+#include "lsm303.h"
+#include "i2c.h"
 
 #define SERIAL_INPUT_BUFFER_SIZE 32
 
@@ -21,6 +23,8 @@ static void processSerialInput(void);
 static void pong(char *);
 static void moveA(char *);
 static void moveB(char *);
+static void readAccel(char *);
+static void sendToBBB(char *);
 
 static void open();
 static void isOpen();
@@ -30,8 +34,6 @@ static void unlock();
 
 static void bbbOpen();
 static void bbbClose();
-
-static void sendToBBB(char *);
 
 static struct Command optList[] = {
   {"ping", pong, true}, // Alive check and debug
@@ -45,6 +47,7 @@ static struct Command optList[] = {
   {"bbbOpen", bbbOpen, false},
   {"bbbClose", bbbClose, false},
   {"sendbbb", sendToBBB, true},
+  {"ra", readAccel, false}
 }; 
 
 int main() {
@@ -59,9 +62,10 @@ int main() {
 void setup() {
 	uart_open(UART_BAUD_RATE, UART_DIRECTION, UART_PARITY, UART_FRAME_SIZE, UART_STOPBIT);
 	command_setup(optList, LENGTH_OF_ARRAY(optList));
+	i2c_master_init(SPI_FREQUENCY);
+	//~ lsm303_init(LSM303_DATA_RATE_25HZ, LSM303_FS_4G);
 	spicmd_init();
 	box_init();
-	spicmd_init();
 	sei();
 }
 
@@ -111,6 +115,13 @@ static void sendToBBB(char * arg) {
 	//~ fprintf(&uartStream, "unlockopen called\n");
 	//~ return 1;
 //~ }
+
+static void readAccel(char * arg) {
+	struct lsm303_accel_reading reading;
+	
+	lsm303_read(&reading);
+	fprintf(&uartStream, "Accel: status: %"PRIx8", x: %"PRId16" y: %"PRId16" z: %"PRId16"\n", reading.rawStatus, reading.x, reading.y, reading.z); 
+}
 
 /**
  * Responds to a ping request.

@@ -10,6 +10,7 @@
 #include "box_control.h"
 #include "servo.h"
 #include "bbb_commands.h"
+#include "spi_command.h"
 
 #define SERIAL_INPUT_BUFFER_SIZE 32
 
@@ -30,6 +31,8 @@ static void unlock();
 static void bbbOpen();
 static void bbbClose();
 
+static void sendToBBB(char *);
+
 static struct Command optList[] = {
   {"ping", pong, true}, // Alive check and debug
   {"moveA", moveA, true},
@@ -40,7 +43,8 @@ static struct Command optList[] = {
   {"lock", lock, false},
   {"unlock", unlock, false},
   {"bbbOpen", bbbOpen, false},
-  {"bbbClose", bbbClose, false}
+  {"bbbClose", bbbClose, false},
+  {"sendbbb", sendToBBB, true},
 }; 
 
 int main() {
@@ -55,6 +59,7 @@ int main() {
 void setup() {
 	uart_open(UART_BAUD_RATE, UART_DIRECTION, UART_PARITY, UART_FRAME_SIZE, UART_STOPBIT);
 	command_setup(optList, LENGTH_OF_ARRAY(optList));
+	spicmd_init();
 	box_init();
 	sei();
 }
@@ -82,6 +87,28 @@ static void processSerialInput(void) {
 		}
 	}
 }
+
+static void sendToBBB(char * arg) {
+	uint8_t i = atoi(arg);
+	fprintf(&uartStream, "sending! %" PRIx8 "\n", i);
+	spicmd_send(i);
+}
+
+//~ int spicmd_callback_closelock(void) {
+	//~ fprintf(&uartStream, "closelock called\n");
+	//~ return 1;
+//~ }
+
+//~ int spicmd_callback_checkstatus(void) {
+	//~ fprintf(&uartStream, "checkstatus called\n");
+	//~ return 1;
+//~ }
+
+
+//~ int spicmd_callback_unlockopen(void) {
+	//~ fprintf(&uartStream, "unlockopen called\n");
+	//~ return 1;
+//~ }
 
 /**
  * Responds to a ping request.

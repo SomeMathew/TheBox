@@ -1,0 +1,52 @@
+This is a firmware for the AVR 328P to test the SPI Interface on the main project.
+
+This firmware enables the SPI as master and enables some serial cmd to interact
+with the slave device.
+
+-Send an SPI command to the Slave
+	CMD -send <CMD Base10>
+	
+-Check the status GPIO
+	CMD -io
+	
+	
+<CMD Base 10>
+Action				Command		(Base 10)
+Unlock/Open Box		0xA1		161
+Lock/Close Box		0xA2		162
+Check Status		0xA3		163
+Get Status GPIO		0xC1		193
+
+
+Known Automated Response from the Slave:
+ACK					0xFA		250
+NACK				0xFB		251
+NACK				0xFC		252
+NACK				0xFD		253
+
+
+
+
+The other response can be generated from the Slave with the serial interface:
+
+-Send a status feedback response through the GPIO / Poll facility:	
+	CMD -sendbbb <RESP Base10>
+
+<RESP Base 10>
+Action			Command		(Base 10)
+Alert			0xB1		177
+Box Closed		0xB2		178
+Box Opened		0xB3		179
+
+Opened			0xEA		234			
+Closed			0xEB		235
+
+
+
+Master (Test board)
+Pin configuration (pin_config.h)
+Arduino Header D5
+	#define BBB_STATUS_DDR	DDRD
+	#define BBB_STATUS_PORT	PORTD
+	#define BBB_STATUS_PIN	PIND
+	#define BBB_STATUS_IO	PD5

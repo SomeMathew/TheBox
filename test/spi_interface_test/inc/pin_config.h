@@ -1,0 +1,14 @@
+#ifndef _DEV_IO_CONFIG_H
+#define _DEV_IO_CONFIG_H
+
+#define LED_ALIVE_DDR	DDRD
+#define LED_ALIVE_PORT	PORTD
+#define LED_ALIVE_PIN	PIND
+#define LED_ALIVE_IO	PD4
+
+#define BBB_STATUS_DDR	DDRD
+#define BBB_STATUS_PORT	PORTD
+#define BBB_STATUS_PIN	PIND
+#define BBB_STATUS_IO	PD5
+
+#endif /* _DEV_IO_CONFIG_H */

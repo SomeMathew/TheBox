@@ -15,6 +15,12 @@
 #define LID_CLOSED_POSITION 180
 #define LID_OPEN_POSITION 30
 
+#define BOX_STATE_IDLE_OPEN     0x01
+#define BOX_STATE_PENDING_OPEN  0x02
+#define BOX_STATE_IDLE_CLOSED   0x03
+#define BOX_STATE_PENDING_CLOSE 0x04
+#define BOX_STATUS_QUERY        0x05
+
 /**
  * Initializes the box for use by preparing its motors
  */
@@ -55,5 +61,30 @@ int box_isOpen();
  * @return 1 if closed, 0 if open
  */
 int box_isClosed();
+
+/**
+ * Returns the state that the box is in
+ * 
+ * BOX_STATE_IDLE_OPEN     0x01
+ * BOX_STATE_PENDING_OPEN  0x02
+ * BOX_STATE_IDLE_CLOSED   0x03
+ * BOX_STATE_PENDING_CLOSE 0x04
+ */
+int box_getState();
+
+/**
+ * Sets the state that the box is in
+ * 
+ * BOX_STATE_IDLE_OPEN     0x01
+ * BOX_STATE_PENDING_OPEN  0x02
+ * BOX_STATE_IDLE_CLOSED   0x03
+ * BOX_STATE_PENDING_CLOSE 0x04
+ */
+void box_setState(uint8_t newState);
+
+/**
+ * Tells the box to take care of the state that it is currently in.
+ */ 
+void box_handleCurrentState();
 
 #endif

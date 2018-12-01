@@ -1,7 +1,13 @@
 #include "box_control.h"
 #include "util/delay.h"
 #include "pin_config.h"
+#include "spi_command.h"
 #include "ioctl.h"
+// TODO remove #include "uart.h" 
+// TODO remove #include <stdlib.h> 
+
+typedef uint8_t State;
+static volatile State state; 
 
 /**
  * Initializes the box for use by preparing its motors
@@ -22,7 +28,76 @@ int box_init() {
     };
     success -= servo_channel_init_angle(LOCK_MOTOR, LOCK_LOCKED_POSITION);
 
+    state = BOX_STATE_IDLE_CLOSED;
     return success;
+}
+
+/**
+ * Returns the state that the box is in
+ * 
+ * BOX_STATE_IDLE_OPEN     0x01
+ * BOX_STATE_PENDING_OPEN  0x02
+ * BOX_STATE_IDLE_CLOSED   0x03
+ * BOX_STATE_PENDING_CLOSE 0x04
+ */
+int box_getState() {
+    return state;
+}
+
+/**
+ * Sets the state that the box is in
+ * 
+ * BOX_STATE_IDLE_OPEN     0x01
+ * BOX_STATE_PENDING_OPEN  0x02
+ * BOX_STATE_IDLE_CLOSED   0x03
+ * BOX_STATE_PENDING_CLOSE 0x04
+ */
+void box_setState(uint8_t newState) {
+    state = newState;
+}
+
+/**
+ * Tells the box to take care of the state that it is currently in.
+ */ 
+void box_handleCurrentState() {
+    int isOpen;
+    switch(state) {
+        case BOX_STATE_PENDING_OPEN:
+            box_unlock();
+            box_open();
+            break;
+        case BOX_STATE_PENDING_CLOSE:
+            box_close();
+            while(box_isOpen()){};
+            box_lock();
+            break;
+        case BOX_STATUS_QUERY:
+            isOpen = box_isOpen();
+            if(isOpen) {
+                spicmd_send(SPICMD_RESP_OPENED);
+                state = BOX_STATE_IDLE_OPEN;
+            } else {
+                spicmd_send(SPICMD_RESP_CLOSED);
+                state = BOX_STATE_IDLE_CLOSED;
+            }
+           	// TODO remove fprintf(&uartStream, "Is switch open? %d\n", box_isOpen());
+
+    }
+}
+
+/**
+ * Will close and lock the box
+ */
+void cmd_closeBox() {
+
+}
+
+/**
+ * Returns whether or not the box is closed
+ * @return 0 if closed, 1 if open
+ */
+int cmd_getStatus() {
+    return box_isOpen();
 }
 
 /**
@@ -63,6 +138,7 @@ int box_close() {
         return -1;
     }
 
+    state = BOX_STATE_IDLE_CLOSED;
     return servo_write(LID_MOTOR, LID_CLOSED_POSITION);
 }
 
@@ -75,6 +151,7 @@ int box_open() {
         return -1;
     }
 
+    state = BOX_STATE_IDLE_OPEN;
     return servo_write(LID_MOTOR, LID_OPEN_POSITION);
 }
 

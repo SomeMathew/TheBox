@@ -89,13 +89,11 @@ int i2c_slave_init(uint8_t addr8) {
 int i2c_master_receive(uint8_t addr8, uint8_t *dataBuffer, size_t size) {
 	i2c_start();
 	i2c_waitForComplete();
-	if(TW_STATUS != TW_START || TW_STATUS != TW_REP_START) {
+	if(TW_STATUS != TW_START && TW_STATUS != TW_REP_START) {
 		status = TW_STATUS;
 		return -1; 
 	}
-
 	i2c_sendNoAck(addr8 | _BV(0)); // SLA+R
-	
 	for (int i = 0; i < size; i++) {
 		dataBuffer[i] = (i < size-1) ? i2c_readAck() : i2c_readNoAck();
 	}
@@ -139,13 +137,13 @@ int i2c_master_read(uint8_t addr8, uint8_t reg, uint8_t *dataBuffer, size_t size
 int i2c_master_write(uint8_t addr8, uint8_t reg, uint8_t *dataBuffer, size_t size) {
 	i2c_start();
 	i2c_waitForComplete();
-		if(TW_STATUS != TW_START) {
+	if(TW_STATUS != TW_START) {
 		status = TW_STATUS;
 		return -1; 
 	}
-	i2c_sendNoAck(addr8 | _BV(1)); // SLA+W
+
+	i2c_sendNoAck(addr8 & ~_BV(0)); // SLA+W
 	i2c_sendNoAck(reg);
-	
 	for (int i = 0; i < size; i++) {
 		i2c_sendNoAck(dataBuffer[i]);
 	}

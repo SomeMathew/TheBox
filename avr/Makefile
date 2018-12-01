@@ -3,7 +3,7 @@
 TOOLROOT = /home/matt/opt/Arduino/arduino-1.8.7/hardware/tools/avr
 PRG = $(notdir $(CURDIR))
 USRSRCS = main.c spi_command.c
-LIBSSRCS = command.c uart.c spi.c i2c.c servo.c box_control.c bbb_commands.c
+LIBSSRCS = command.c uart.c spi.c i2c.c servo.c lsm303.c box_control.c bbb_commands.c
 
 # Directory locations
 OBJDIR = bin

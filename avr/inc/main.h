@@ -12,4 +12,9 @@
 #define UART_DIRECTION UART_DIRECTION_RXTX
 #define UART_STOPBIT UART_STOP_1BIT
 
+/*
+ * SPI Configuration
+ */
+#define SPI_FREQUENCY 100000
+
 #endif /* _DEV_MAIN_H */

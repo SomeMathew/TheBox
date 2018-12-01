@@ -16,7 +16,7 @@ CLOCK = 16000000
 ISPTOOL	?= arduino
 ISPPORT	?= /dev/ttyUSB0
 ISPSPEED ?= 57600
-DUDECONF = ../libs/avrdude.conf
+DUDECONF = ./libs/avrdude.conf
 
 ###### END User Settings ######
 

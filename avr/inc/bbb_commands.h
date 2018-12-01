@@ -12,17 +12,17 @@
 /**
  * Will unlock and open the box
  */
-void cmd_openBox();
+int spicmd_callback_unlockopen();
 
 /**
  * Will close and lock the box
  */
-void cmd_closeBox();
+int spicmd_callback_closelock();
 
 /**
  * Returns whether or not the box is closed
  * @return 0 if closed, 1 if open
  */
-int cmd_getStatus();
+int spicmd_callback_checkstatus();
 
 #endif

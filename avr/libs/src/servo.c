@@ -10,16 +10,12 @@
 
 // ISR to set pulse to ServoB on overflow
 ISR(TIMER1_OVF_vect) {
-    cli();
     ioctl_write(&SERVO_B_PORT, SERVO_B_IO, 1);
-    sei();
 }
 
 // ISR to clear pulse to ServoB on CompareMatch
 ISR(TIMER1_COMPB_vect) {
-    cli();
     ioctl_write(&SERVO_B_PORT, SERVO_B_IO, 0);
-    sei();
 }
 
 /**

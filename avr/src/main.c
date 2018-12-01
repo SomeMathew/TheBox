@@ -61,11 +61,13 @@ void setup() {
 	command_setup(optList, LENGTH_OF_ARRAY(optList));
 	spicmd_init();
 	box_init();
+	spicmd_init();
 	sei();
 }
 
 void loop() {
 	processSerialInput();
+	box_handleCurrentState();
 }
 
 /**
@@ -143,7 +145,8 @@ static void open() {
  * Moves servo on channel A to desired angle
  */
 static void isOpen() {
-	fprintf(&uartStream, "Is switch open? %d\n", cmd_getStatus());
+	fprintf(&uartStream, "Is switch open? %d\n", box_isOpen());
+	// spicmd_callback_checkstatus();
 }
 
 static void close() {
@@ -159,9 +162,9 @@ static void unlock() {
 }
 
 static void bbbOpen() {
-	cmd_openBox();
+	spicmd_callback_unlockopen();
 }
 
 static void bbbClose() {
-	cmd_closeBox();
+	spicmd_callback_closelock();
 }

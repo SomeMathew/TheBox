@@ -80,6 +80,14 @@
 #define LSM303_LIR_INT2	(1)
 #define	LSM303_D4D_INT2	(0)
 
+// CTRL_REG6_A (25h)
+#define LSM303_I2_CLICK_EN	(7)
+#define LSM303_I2_INT1		(6)
+#define LSM303_I2_INT2		(5)
+#define LSM303_BOOT_I1		(4)
+#define LSM303_P2_ACT		(3)
+#define LSM303_H_LACTIVE	(1)
+
 // STATUS_REG_A (27h)
 #define LSM303_ZYXOR	(7)
 #define LSM303_ZOR		(6)
@@ -135,7 +143,7 @@ int lsm303_init(enum lsm303_data_rate rate, enum lsm303_full_scale scale) {
 	return 1;
 }
 
-int lsm303_set_interrupt(void) {
+int lsm303_set_interrupt(uint8_t threshold, uint8_t duration) {
 	uint8_t ctrlRegValue;
 	
 	// Enable And/Or interrupt on INT1
@@ -146,24 +154,27 @@ int lsm303_set_interrupt(void) {
 	ctrlRegValue = _BV(LSM303_LIR_INT1);
 	i2c_master_write(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_CTRL_REG5_A, &ctrlRegValue, 1);
 	
+	// Set interrupt active low
+	//~ ctrlRegValue = _BV(LSM303_H_LACTIVE);
+	//~ i2c_master_write(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_CTRL_REG6_A, &ctrlRegValue, 1);
+	
 	// OR combination
 	// YHigh and X High
 	ctrlRegValue = _BV(LSM303_YHIE_YUPE) | _BV(LSM303_XHIE_XUPE);
 	i2c_master_write(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_INT1_CFG_A, &ctrlRegValue, 1);
 	
-	
-	// TODO test thershold
-	ctrlRegValue = 5;
+	// Mask the threshold so it keeps the MSB at 0
+	ctrlRegValue = threshold & (0b01111111);
 	i2c_master_write(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_INT1_THS_A, &ctrlRegValue, 1);
 	
-	// TODO test Duration
-	ctrlRegValue = 2;
+	// Mask the duration so it keeps the MSB to 0
+	ctrlRegValue = duration & (0b01111111);
 	i2c_master_write(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_INT1_DURATION_A, &ctrlRegValue, 1);
 	
 	return 0;
 }
 
-int lsm303_clear_latched_interrupt(void) {
+int lsm303_clear_latched_interrupt() {
 	uint8_t readValue;
 	
 	// Read interrupt source -> Also clears latched interrupt

@@ -50,9 +50,22 @@ struct lsm303_accel_reading {
  */
 int lsm303_init(enum lsm303_data_rate rate, enum lsm303_full_scale scale);
 
-int lsm303_set_interrupt(void);
+/**
+ * Enables the movement interrupt for the accelerometer with the given
+ * threshold and duration. See the datasheet with param.
+ * 
+ * @param threshold See datasheet (Direct reg values)
+ * @param duration See datasheet (Direct reg values)
+ * 
+ */
+int lsm303_set_interrupt(uint8_t threshold, uint8_t duration);
 
-int lsm303_clear_latched_interrupt(void);
+/**
+ * Clear the latched interrupt and returns the raw status.
+ * 
+ * @return the raw status from the device (See datasheet if needed).
+ */
+int lsm303_clear_latched_interrupt();
 
 /**
  * Reads the accelerometer from the LSM303 device.

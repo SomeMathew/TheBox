@@ -13,6 +13,8 @@
 #include "spi_command.h"
 #include "lsm303.h"
 #include "i2c.h"
+#include "ioctl.h"
+#include "pin_config.h"
 
 #define SERIAL_INPUT_BUFFER_SIZE 32
 
@@ -25,6 +27,7 @@ static void moveA(char *);
 static void moveB(char *);
 static void readAccel(char *);
 static void sendToBBB(char *);
+static void clearAccelInt(char *);
 
 static void open();
 static void isOpen();
@@ -47,7 +50,8 @@ static struct Command optList[] = {
   {"bbbOpen", bbbOpen, false},
   {"bbbClose", bbbClose, false},
   {"sendbbb", sendToBBB, true},
-  {"ra", readAccel, false}
+  {"ra", readAccel, false},
+  {"cai", clearAccelInt, false}
 }; 
 
 int main() {
@@ -63,15 +67,21 @@ void setup() {
 	uart_open(UART_BAUD_RATE, UART_DIRECTION, UART_PARITY, UART_FRAME_SIZE, UART_STOPBIT);
 	command_setup(optList, LENGTH_OF_ARRAY(optList));
 	i2c_master_init(SPI_FREQUENCY);
-	//~ lsm303_init(LSM303_DATA_RATE_25HZ, LSM303_FS_4G);
+	lsm303_init(LSM303_DATA_RATE_25HZ, LSM303_FS_4G);
 	spicmd_init();
 	box_init();
 	sei();
+	
+	ioctl_setdir(&LED_ALIVE_DDR, LED_ALIVE_IO, OUTPUT);
+	ioctl_setdir(&ACCEL_INT_DDR, ACCEL_INT_DDR, INPUT); 
+	
+	lsm303_set_interrupt();
 }
 
 void loop() {
 	processSerialInput();
 	box_handleCurrentState();
+	ioctl_write(&LED_ALIVE_PORT, LED_ALIVE_IO, ioctl_read(&ACCEL_INT_PIN, ACCEL_INT_IO));
 }
 
 /**
@@ -122,6 +132,14 @@ static void readAccel(char * arg) {
 	lsm303_read(&reading);
 	fprintf(&uartStream, "Accel: status: %"PRIx8", x: %"PRId16" y: %"PRId16" z: %"PRId16"\n", reading.rawStatus, reading.x, reading.y, reading.z); 
 }
+
+
+static void clearAccelInt(char * arg) {
+	uint8_t src = lsm303_clear_latched_interrupt();
+	
+	fprintf(&uartStream, "Int SRC: %"PRIx8"\n", src);
+}
+
 
 /**
  * Responds to a ping request.

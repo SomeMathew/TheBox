@@ -15,6 +15,6 @@
 /*
  * SPI Configuration
  */
-#define SPI_FREQUENCY 100000
+#define SPI_FREQUENCY 50000
 
 #endif /* _DEV_MAIN_H */

@@ -3,7 +3,9 @@
 #include <util/twi.h>
 #include <avr/interrupt.h>
 #include <util/atomic.h>
+#include <util/delay_basic.h>
 #include "i2c.h"
+#include "uart.h"
 
 static uint8_t txBuffer[I2C_TX_BUFFER_SIZE];
 
@@ -89,6 +91,7 @@ int i2c_slave_init(uint8_t addr8) {
 int i2c_master_receive(uint8_t addr8, uint8_t *dataBuffer, size_t size) {
 	i2c_start();
 	i2c_waitForComplete();
+	
 	if(TW_STATUS != TW_START && TW_STATUS != TW_REP_START) {
 		status = TW_STATUS;
 		return -1; 
@@ -141,14 +144,18 @@ int i2c_master_write(uint8_t addr8, uint8_t reg, uint8_t *dataBuffer, size_t siz
 		status = TW_STATUS;
 		return -1; 
 	}
-
+	_delay_loop_1(255);
 	i2c_sendNoAck(addr8 & ~_BV(0)); // SLA+W
+	_delay_loop_1(255);
 	i2c_sendNoAck(reg);
+	_delay_loop_1(255);
 	for (int i = 0; i < size; i++) {
 		i2c_sendNoAck(dataBuffer[i]);
+		_delay_loop_1(255);
 	}
 
 	i2c_stop();
+	_delay_loop_1(255);
 	
 	return 0;
 }

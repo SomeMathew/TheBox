@@ -27,6 +27,11 @@
 #define ACCEL_INT_DDR	DDRD
 #define ACCEL_INT_PORT	PORTD
 #define ACCEL_INT_PIN	PIND
-#define ACCEL_INT_IO	PD6
+#define ACCEL_INT_IO	PD2
+
+#define ALERT_DDR 		DDRD
+#define ALERT_PORT 		PORTD
+#define ALERT_PIN		PIND
+#define ALERT_IO 		PD2
 
 #endif /* _DEV_IO_CONFIG_H */

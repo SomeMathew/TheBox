@@ -15,6 +15,7 @@
 #include "i2c.h"
 #include "ioctl.h"
 #include "pin_config.h"
+#include "alert.h"
 
 #define SERIAL_INPUT_BUFFER_SIZE 32
 
@@ -67,15 +68,15 @@ void setup() {
 	uart_open(UART_BAUD_RATE, UART_DIRECTION, UART_PARITY, UART_FRAME_SIZE, UART_STOPBIT);
 	command_setup(optList, LENGTH_OF_ARRAY(optList));
 	i2c_master_init(SPI_FREQUENCY);
-	lsm303_init(LSM303_DATA_RATE_25HZ, LSM303_FS_4G);
 	spicmd_init();
 	box_init();
+	alert_init();
 	sei();
 	
 	ioctl_setdir(&LED_ALIVE_DDR, LED_ALIVE_IO, OUTPUT);
 	ioctl_setdir(&ACCEL_INT_DDR, ACCEL_INT_DDR, INPUT); 
 	
-	lsm303_set_interrupt();
+	alert_run(box_isOpen() ? ALERT_RUN_DISARM : ALERT_RUN_ARMED);
 }
 
 void loop() {

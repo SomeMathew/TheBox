@@ -26,6 +26,7 @@ enum lsm303_status {
 	LSM303_DATA_NREADY = 0x1
 };
 
+
 struct lsm303_accel_reading {
 	uint8_t rawStatus;
 	int16_t x;
@@ -48,6 +49,10 @@ struct lsm303_accel_reading {
  * @return >= 0 on success, negative otherwise.
  */
 int lsm303_init(enum lsm303_data_rate rate, enum lsm303_full_scale scale);
+
+int lsm303_set_interrupt(void);
+
+int lsm303_clear_latched_interrupt(void);
 
 /**
  * Reads the accelerometer from the LSM303 device.

@@ -41,35 +41,80 @@
 #define	LSM303_REGISTER_ACCEL_TIME_WINDOW_A     (0x3D)
 /****************************************************/
 
+// CTRL_REG1_A (20h)
+#define LSM303_ODR		(4)
+#define	LSM303_LPEN		(3)
+#define LSM303_ZEN		(2)
+#define LSM303_YEN		(1)
+#define	LSM303_XEN		(0)
+
+// CTRL_REG2_A (21h)
+#define LSM303_L1_CLICK		(7)
+#define LSM303_L1_AOI1		(6)
+#define LSM303_L1_AOI2		(5)
+#define	LSM303_L1_DRDY1		(4)
+#define LSM303_L1_DRDY2		(3)
+#define LSM303_L1_WTM		(2)
+#define	LSM303_L1_OVERRUN	(1)
+
+// CTRL_REG3_A (22h)
+#define LSM303_HPM		(6)
+#define LSM303_HPCF		(4)
+#define	LSM303_FDS		(3)
+#define LSM303_HPCLICK	(2)
+#define LSM303_HPIS2	(1)
+#define	LSM303_HPIS1	(0)
+
+// CTRL_REG4_A (23h)
+#define LSM303_BDU 		(7)
+#define LSM303_BLE		(6)
+#define LSM303_FS		(4)
+#define LSM303_HR		(3)
+#define LSM303_SIM		(0)
+
+// CTRL_REG5_A (24h)
+#define LSM303_BOOT		(7)
+#define LSM303_FIFO_EN	(6)
+#define	LSM303_LIR_INT1	(3)
+#define LSM303_D4D_INT1	(2)
+#define LSM303_LIR_INT2	(1)
+#define	LSM303_D4D_INT2	(0)
+
+// STATUS_REG_A (27h)
+#define LSM303_ZYXOR	(7)
+#define LSM303_ZOR		(6)
+#define LSM303_YOR		(5)
+#define	LSM303_XOR		(4)
+#define LSM303_ZYXDA	(3)
+#define LSM303_ZDA		(2)
+#define LSM303_YDA		(1)
+#define LSM303_XDA		(0)
+
+// INT1_CFG_A (30h)
+#define LSM303_AOI				(7)
+#define LSM303_R6D				(6)
+#define LSM303_ZHIE_ZUPE		(5)
+#define LSM303_ZLIE_ZDOWNE		(4)
+#define	LSM303_YHIE_YUPE		(3)
+#define LSM303_YLIE_YDOWNE		(2)
+#define	LSM303_XHIE_XUPE		(1)
+#define LSM303_XLIE_XDOWNE		(0)
+
+// INT1_SRC_A (31h)
+#define LSM303_IA		(6)
+#define LSM303_ZH		(5)
+#define LSM303_ZL		(4)
+#define LSM303_YH		(3)
+#define LSM303_YL		(2)
+#define LSM303_XH		(1)
+#define LSM303_XL		(0)
+
 #define LSM303_REGISTER_AUTO_INC (0x80)
 
 #define LSM303DLHC_ADDRESS_LIN_ACCEL (0b00110010)
 
-// CTRL_REG1_A (20h)
-#define ODR		(4)
-#define	LPEN	(3)
-#define ZEN		(2)
-#define YEN		(1)
-#define	XEN		(0)
-
-// CTRL_REG4_A (23h)
-#define BDU 	(7)
-#define BLE		(6)
-#define FS		(4)
-#define HR		(3)
-#define SIM		(0)
-
-// STATUS_REG_A (27h)
-#define ZYXOR	(7)
-#define ZOR		(6)
-#define YOR		(5)
-#define	XOR		(4)
-#define ZYXDA	(3)
-#define ZDA		(2)
-#define YDA		(1)
-#define XDA		(0)
-
 #define ACCEL_READING_SIZE 7
+
 
 
 static void decodeReading(uint8_t * rawReading, struct lsm303_accel_reading * reading);
@@ -80,17 +125,51 @@ static void decodeReading(uint8_t * rawReading, struct lsm303_accel_reading * re
 int lsm303_init(enum lsm303_data_rate rate, enum lsm303_full_scale scale) {
 	uint8_t ctrlRegValue;
 	// Set ACCEL_CTRL_REG1_A: Output Data Rate and Enable all axis
-	ctrlRegValue = (rate << (ODR)) | _BV(ZEN) | _BV(YEN) | _BV(XEN);
+	ctrlRegValue = (rate << (LSM303_ODR)) | _BV(LSM303_ZEN) | _BV(LSM303_YEN) | _BV(LSM303_XEN);
 	i2c_master_write(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_CTRL_REG1_A, &ctrlRegValue, 1);
-
-	
-	// TODO enable interrupt in CTRL_REG3_A
 	
 	// Set ACCEL_CTRL_REG4_A: Full-scale selection, 
-	ctrlRegValue = (scale << (FS));
+	ctrlRegValue = (scale << (LSM303_FS));
 	i2c_master_write(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_CTRL_REG4_A, &ctrlRegValue, 1);
 	
 	return 1;
+}
+
+int lsm303_set_interrupt(void) {
+	uint8_t ctrlRegValue;
+	
+	// Enable And/Or interrupt on INT1
+	ctrlRegValue = _BV(LSM303_L1_AOI1);
+	i2c_master_write(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_CTRL_REG3_A, &ctrlRegValue, 1);
+	
+	// Latch interrupt on INT1
+	ctrlRegValue = _BV(LSM303_LIR_INT1);
+	i2c_master_write(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_CTRL_REG5_A, &ctrlRegValue, 1);
+	
+	// OR combination
+	// YHigh and X High
+	ctrlRegValue = _BV(LSM303_YHIE_YUPE) | _BV(LSM303_XHIE_XUPE);
+	i2c_master_write(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_INT1_CFG_A, &ctrlRegValue, 1);
+	
+	
+	// TODO test thershold
+	ctrlRegValue = 5;
+	i2c_master_write(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_INT1_THS_A, &ctrlRegValue, 1);
+	
+	// TODO test Duration
+	ctrlRegValue = 2;
+	i2c_master_write(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_INT1_DURATION_A, &ctrlRegValue, 1);
+	
+	return 0;
+}
+
+int lsm303_clear_latched_interrupt(void) {
+	uint8_t readValue;
+	
+	// Read interrupt source -> Also clears latched interrupt
+	i2c_master_read(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_INT1_SOURCE_A, &readValue, 1);
+	
+	return readValue;
 }
 
 /**
@@ -108,7 +187,7 @@ int lsm303_read(struct lsm303_accel_reading * reading) {
 	
 	//~ fprintf(&uartStream, "Raw:, val: %"PRIx8", xl: %"PRIx8", xh: %"PRIx8", yl: %"PRIx8", yh: %"PRIx8", zl: %"PRIx8", zh:%"PRIx8"\n", rawReading[0],rawReading[1],rawReading[2],rawReading[3],rawReading[4],rawReading[5], rawReading[6]);
 	// Check if the data is valid
-	if (rawReading[0] & _BV(ZYXDA)) {
+	if (rawReading[0] & _BV(LSM303_ZYXDA)) {
 		decodeReading(rawReading, reading); 
 	} else {
 		reading->status = LSM303_DATA_NREADY;

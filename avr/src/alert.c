@@ -57,6 +57,10 @@ static inline void disarm_alert() {
 	}
 }
 
+uint8_t alert_getstatus() {
+	return alarmState;
+}
+
 void alert_run(uint8_t run) {
 	if (alarmState == ALERT_STATE_DISARMED || alarmState == ALERT_STATE_OK) {
 		if (run == ALERT_RUN_ARMED) {

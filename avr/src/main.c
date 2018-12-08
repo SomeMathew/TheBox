@@ -29,6 +29,7 @@ static void moveB(char *);
 static void readAccel(char *);
 static void sendToBBB(char *);
 static void clearAccelInt(char *);
+static void alertstatus(char *);
 
 static void open();
 static void isOpen();
@@ -52,7 +53,8 @@ static struct Command optList[] = {
   {"bbbClose", bbbClose, false},
   {"sendbbb", sendToBBB, true},
   {"ra", readAccel, false},
-  {"cai", clearAccelInt, false}
+  {"cai", clearAccelInt, false},
+  {"alert", alertstatus, false}
 }; 
 
 int main() {
@@ -110,6 +112,12 @@ static void sendToBBB(char * arg) {
 	fprintf(&uartStream, "sending! %" PRIx8 "\n", i);
 	spicmd_send(i);
 }
+
+static void alertstatus(char * arg) {
+	fprintf(&uartStream, "Status: %"PRIx8 "\n", alert_getstatus());
+}
+
+
 
 //~ int spicmd_callback_closelock(void) {
 	//~ fprintf(&uartStream, "closelock called\n");

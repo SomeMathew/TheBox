@@ -12,6 +12,7 @@
 #define ALERT_ACCEL_DURATION 		(2)
 
 void alert_run(uint8_t run);
+uint8_t alert_getstatus();
 int alert_init();
 int alert_execute();
 

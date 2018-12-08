@@ -31,12 +31,7 @@ static void sendToBBB(char *);
 static void clearAccelInt(char *);
 static void alertstatus(char *);
 
-static void open();
 static void isOpen();
-static void close();
-static void lock();
-static void unlock();
-
 static void bbbOpen();
 static void bbbClose();
 
@@ -44,11 +39,7 @@ static struct Command optList[] = {
   {"ping", pong, true}, // Alive check and debug
   {"moveA", moveA, true},
   {"moveB", moveB, true},
-  {"open", open, false},
   {"isOpen", isOpen, false},
-  {"close", close, false},
-  {"lock", lock, false},
-  {"unlock", unlock, false},
   {"bbbOpen", bbbOpen, false},
   {"bbbClose", bbbClose, false},
   {"sendbbb", sendToBBB, true},
@@ -167,6 +158,7 @@ static void pong(char * arg) {
  */
 static void moveA(char * arg) {
 	int i = atoi(arg);
+	fprintf(&uartStream, " Moving Servo A %d\n", i);
 	servo_write(SERVO_CHANNELA, i);
 }
 
@@ -175,12 +167,8 @@ static void moveA(char * arg) {
  */
 static void moveB(char * arg) {
 	int i = atoi(arg);
-	fprintf(&uartStream, " Moving %d\n", i);
+	fprintf(&uartStream, " Moving Servo B %d\n", i);
 	servo_write(SERVO_CHANNELB, i);
-}
-
-static void open() {
-	box_open();
 }
 
 /**
@@ -189,18 +177,6 @@ static void open() {
 static void isOpen() {
 	fprintf(&uartStream, "Is switch open? %d\n", box_isOpen());
 	// spicmd_callback_checkstatus();
-}
-
-static void close() {
-	box_close();
-}
-
-static void lock() {
-	box_lock();
-}
-
-static void unlock() {
-	box_unlock();
 }
 
 static void bbbOpen() {

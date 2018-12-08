@@ -99,7 +99,7 @@ static void wait() {
 ISR(TIMER0_OVF_vect) {
     timerCount++;
     // B/c 16 MHz / 1024 / 256 => overflows / s * 30 s
-    if(timerCount == 1831) {
+    if(timerCount == 305) {
       if (alarmState == ALERT_STATE_INTRUDER) {
 		  ioctl_write(&LED_ALIVE_PORT, LED_ALIVE_IO, 0);
 		  alarmState = ALERT_STATE_OK;

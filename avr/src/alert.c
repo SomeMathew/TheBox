@@ -29,9 +29,7 @@ volatile int timerCount = 0;
 
 static inline void arm_alert() {
 	lsm303_clear_latched_interrupt();
-	
-	// EICRA already at 00 for active low interrupt on INT0
-	EICRA |= _BV(ISC00) | _BV(ISC01);
+
 	// Enable interrupt 0 
 	EIMSK |= _BV(INT0);
 	
@@ -42,12 +40,10 @@ static inline void arm_alert() {
 }
 
 static inline void disableAlertInterrupt() {
-	lsm303_clear_latched_interrupt();
-	
-	// EICRA Rising edge
-	EICRA |= _BV(ISC00) | _BV(ISC01);
 	// Disable interrupt 0 
 	EIMSK &= ~_BV(INT0);
+	
+	lsm303_clear_latched_interrupt();
 }
 
 static inline void disarm_alert() {
@@ -78,14 +74,16 @@ void alert_run(uint8_t run) {
 
 
 int alert_init() {
-	alarmState = ALERT_STATE_OK;
-	
 	lsm303_init(LSM303_DATA_RATE_25HZ, LSM303_FS_4G);
 	lsm303_set_interrupt(ALERT_ACCEL_THRESHOLD, ALERT_ACCEL_DURATION);
 	
 	// Wait for the lsm303 to stabilize otherwise we get a false interrupt
 	_delay_ms(ALERT_INIT_DELAY_MS);
 	
+	// EICRA already at 00 for active low interrupt on INT0
+	EICRA |= _BV(ISC00) | _BV(ISC01);
+	
+	alarmState = ALERT_STATE_OK;
 	return 1;
 }
 

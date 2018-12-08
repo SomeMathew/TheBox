@@ -70,19 +70,19 @@ void setup() {
 	i2c_master_init(SPI_FREQUENCY);
 	spicmd_init();
 	box_init();
-	alert_init();
 	sei();
+	alert_init();
+
 	
 	ioctl_setdir(&LED_ALIVE_DDR, LED_ALIVE_IO, OUTPUT);
 	ioctl_setdir(&ACCEL_INT_DDR, ACCEL_INT_DDR, INPUT); 
 	
-	alert_run(box_isOpen() ? ALERT_RUN_DISARM : ALERT_RUN_ARMED);
 }
 
 void loop() {
 	processSerialInput();
 	box_handleCurrentState();
-	ioctl_write(&LED_ALIVE_PORT, LED_ALIVE_IO, ioctl_read(&ACCEL_INT_PIN, ACCEL_INT_IO));
+	alert_run(box_isOpen() ? ALERT_RUN_DISARM : ALERT_RUN_ARMED);
 }
 
 /**

@@ -31,7 +31,7 @@ static inline void arm_alert() {
 	lsm303_clear_latched_interrupt();
 	
 	// EICRA already at 00 for active low interrupt on INT0
-	EICRA &= ~(_BV(ISC00) | _BV(ISC01));
+	EICRA |= _BV(ISC00) | _BV(ISC01);
 	// Enable interrupt 0 
 	EIMSK |= _BV(INT0);
 	
@@ -44,8 +44,8 @@ static inline void arm_alert() {
 static inline void disableAlertInterrupt() {
 	lsm303_clear_latched_interrupt();
 	
-	// EICRA Falling edge
-	EICRA |= _BV(ISC01);
+	// EICRA Rising edge
+	EICRA |= _BV(ISC00) | _BV(ISC01);
 	// Disable interrupt 0 
 	EIMSK &= ~_BV(INT0);
 }

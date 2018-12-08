@@ -3,7 +3,7 @@
 
 #include "pin_config.h"
 
-#define ALERT_INIT_DELAY_MS			(500)
+#define ALERT_INIT_DELAY_MS			(1500)
 
 #define ALERT_RUN_ARMED				(10)
 #define ALERT_RUN_DISARM			(11)

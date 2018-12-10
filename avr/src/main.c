@@ -112,24 +112,6 @@ static void alertstatus(char * arg) {
 	fprintf(&uartStream, "Status: %"PRIx8 "\n", alert_getstatus());
 }
 
-
-
-//~ int spicmd_callback_closelock(void) {
-	//~ fprintf(&uartStream, "closelock called\n");
-	//~ return 1;
-//~ }
-
-//~ int spicmd_callback_checkstatus(void) {
-	//~ fprintf(&uartStream, "checkstatus called\n");
-	//~ return 1;
-//~ }
-
-
-//~ int spicmd_callback_unlockopen(void) {
-	//~ fprintf(&uartStream, "unlockopen called\n");
-	//~ return 1;
-//~ }
-
 static void readAccel(char * arg) {
 	struct lsm303_accel_reading reading;
 	

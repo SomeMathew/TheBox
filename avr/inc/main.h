@@ -15,6 +15,6 @@
 /*
  * SPI Configuration
  */
-#define SPI_FREQUENCY 50000
+#define I2C_FREQUENCY 50000
 
 #endif /* _DEV_MAIN_H */

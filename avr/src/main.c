@@ -60,19 +60,26 @@ int main() {
 void setup() {
 	uart_open(UART_BAUD_RATE, UART_DIRECTION, UART_PARITY, UART_FRAME_SIZE, UART_STOPBIT);
 	sei();
-	fprintf(&uartStream, "Init cmd.\n");
+	
+	fprintf(&uartStream, "Init cmd...\n");
 	command_setup(optList, LENGTH_OF_ARRAY(optList));
-	fprintf(&uartStream, "Init i2c.\n");
-	i2c_master_init(SPI_FREQUENCY);
-	fprintf(&uartStream, "init spicmd.\n");
+	
+	fprintf(&uartStream, "Init spicmd...\n");
 	spicmd_init();
-	fprintf(&uartStream, "init box.\n");
+	
+	fprintf(&uartStream, "Init box...\n");
 	box_init();
-	fprintf(&uartStream, "init alert.\n");
-	alert_init();
 		
+	fprintf(&uartStream, "Init i2c...\n");
+	i2c_master_init(I2C_FREQUENCY);
+	
+	fprintf(&uartStream, "Init alert...\n");
+	alert_init();
+	
+	fprintf(&uartStream, "Init global GPIOs...\n");	
 	ioctl_setdir(&LED_ALIVE_DDR, LED_ALIVE_IO, OUTPUT);
 	ioctl_setdir(&ACCEL_INT_DDR, ACCEL_INT_DDR, INPUT); 
+	
 	fprintf(&uartStream, "System ready!\n");
 }
 

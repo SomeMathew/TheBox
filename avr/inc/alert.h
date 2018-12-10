@@ -8,7 +8,7 @@
 #define ALERT_RUN_ARMED				(10)
 #define ALERT_RUN_DISARM			(11)
 
-#define ALERT_ACCEL_THRESHOLD		(5)
+#define ALERT_ACCEL_THRESHOLD		(4)
 #define ALERT_ACCEL_DURATION 		(2)
 
 void alert_run(uint8_t run);

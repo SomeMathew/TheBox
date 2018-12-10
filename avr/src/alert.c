@@ -33,7 +33,6 @@ static inline void arm_alert() {
 	// Enable interrupt 0 
 	EIMSK |= _BV(INT0);
 	
-	
 	ATOMIC_BLOCK(ATOMIC_FORCEON) {
 		alarmState = ALERT_STATE_ARMED;
 	}
@@ -42,7 +41,6 @@ static inline void arm_alert() {
 static inline void disableAlertInterrupt() {
 	// Disable interrupt 0 
 	EIMSK &= ~_BV(INT0);
-	
 	lsm303_clear_latched_interrupt();
 }
 
@@ -58,15 +56,11 @@ uint8_t alert_getstatus() {
 }
 
 void alert_run(uint8_t run) {
-	if (alarmState == ALERT_STATE_DISARMED || alarmState == ALERT_STATE_OK) {
-		if (run == ALERT_RUN_ARMED) {
-			arm_alert();
-		}
+	if ((alarmState == ALERT_STATE_DISARMED || alarmState == ALERT_STATE_OK) && run == ALERT_RUN_ARMED) {
+		arm_alert();
 		alarmState = run;
-	} else if (alarmState == ALERT_STATE_ARMED) {
-		if (run == ALERT_RUN_DISARM) {
-			disarm_alert();
-		}
+	} else if (alarmState == ALERT_STATE_ARMED && run == ALERT_RUN_DISARM) {
+		disarm_alert();
 		alarmState = run;
 	}
 }
@@ -99,14 +93,17 @@ static void wait() {
 ISR(TIMER0_OVF_vect) {
     timerCount++;
     // B/c 16 MHz / 1024 / 256 => overflows / s * 30 s
-    if(timerCount == 305) {
+    if(timerCount >= 305) {
       if (alarmState == ALERT_STATE_INTRUDER) {
 		  ioctl_write(&LED_ALIVE_PORT, LED_ALIVE_IO, 0);
 		  alarmState = ALERT_STATE_OK;
 	  }
       timerCount = 0;
-      // disable timer
+      // Disable timer
+      TCCR0B = 0;
+      // disable timer interrupt
       TIMSK0 &= ~(_BV(TOIE0));
+      
     }
 }
 

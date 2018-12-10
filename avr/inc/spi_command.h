@@ -2,8 +2,6 @@
 #define _DEV_SPI_CMD_H
 
 #define SPICMD_BBB_ALERT 	(0xB1)
-#define SPICMD_BBB_CLOSED 	(0xB2)
-#define SPICMD_BBB_OPENED 	(0xB3)
 
 #define SPICMD_RESP_OPENED 	(0xEA)
 #define SPICMD_RESP_CLOSED 	(0xEB)

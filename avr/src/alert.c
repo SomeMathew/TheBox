@@ -1,5 +1,3 @@
-// Alert module for the lsm303 with interrupt enabled
-
 #include <stdint.h>
 #include <stddef.h>
 #include <avr/io.h>
@@ -27,6 +25,12 @@ volatile State alarmState = ALERT_STATE_OFF;
 volatile int timerCount = 0;
 
 
+/**
+ * Set the alert to ARMED.
+ * 
+ * This will clear any pending interrupt on the LSM303 and enables
+ * the EXTINT0 interrupt.
+ */
 static inline void arm_alert() {
 	lsm303_clear_latched_interrupt();
 
@@ -38,12 +42,23 @@ static inline void arm_alert() {
 	}
 }
 
+/**
+ * Disables the EXTINT0 interrupt and clears the latched interrupt on the
+ * LSM303.
+ * 
+ * This does not change the state machine. 
+ */
 static inline void disableAlertInterrupt() {
 	// Disable interrupt 0 
 	EIMSK &= ~_BV(INT0);
 	lsm303_clear_latched_interrupt();
 }
 
+/**
+ * Set the alert to DISARMED.
+ * 
+ * Clears pending interrupt on the LSM303 and disables EXTINT0 interrupt.
+ */
 static inline void disarm_alert() {
 	disableAlertInterrupt();
 	ATOMIC_BLOCK(ATOMIC_FORCEON) {
@@ -51,10 +66,16 @@ static inline void disarm_alert() {
 	}
 }
 
+/*
+ * @see alert.h
+ */
 uint8_t alert_getstatus() {
 	return alarmState;
 }
 
+/*
+ * @see alert.h
+ */
 void alert_run(uint8_t run) {
 	if ((alarmState == ALERT_STATE_DISARMED || alarmState == ALERT_STATE_OK) && run == ALERT_RUN_ARMED) {
 		arm_alert();
@@ -66,7 +87,9 @@ void alert_run(uint8_t run) {
 }
 
 
-
+/*
+ * @see alert.h
+ */
 int alert_init() {
 	lsm303_init(LSM303_DATA_RATE_25HZ, LSM303_FS_4G);
 	lsm303_set_interrupt(ALERT_ACCEL_THRESHOLD, ALERT_ACCEL_DURATION);
@@ -81,6 +104,11 @@ int alert_init() {
 	return 1;
 }
 
+/**
+ * Wait using the timer0, used to quiet the alarm on interuders status.
+ * 
+ * This will prevent multiple sequential event of alert in a 5sec interval.
+ */
 static void wait() {
   TCCR0B |= (1 << CS02) | (1 << CS00); // Set the prescalar to 1024
   TIMSK0 |= (1 << TOIE0); // Enable the Timer0 overflow Interrupt
@@ -89,10 +117,14 @@ static void wait() {
 }
 
 
-// Interrupt vector to handle the overflow of Timer0
+/**
+ * Waiting ISR to manage the quiet time of the alarm on intruder alert.
+ * 
+ * @see #wait()
+ */
 ISR(TIMER0_OVF_vect) {
     timerCount++;
-    // B/c 16 MHz / 1024 / 256 => overflows / s * 30 s
+    // B/c 16 MHz / 1024 / 256 => overflows / s * 5 s
     if(timerCount >= 305) {
       if (alarmState == ALERT_STATE_INTRUDER) {
 		  ioctl_write(&LED_ALIVE_PORT, LED_ALIVE_IO, 0);
@@ -108,7 +140,11 @@ ISR(TIMER0_OVF_vect) {
 }
 
 
-
+/**
+ * EXTINT0 when LSM303 initiates an interrupt.
+ * 
+ * This is the intruder alert.
+ */
 ISR(INT0_vect) {
 	if (alarmState == ALERT_STATE_ARMED) {
 		disableAlertInterrupt();

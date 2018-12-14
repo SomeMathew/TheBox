@@ -24,7 +24,24 @@ struct Command {
   bool hasArg;
 };
 
+/**
+ * Setup and enable the module with the given optList.
+ * 
+ * @param optList[] List of opt struct with command vector and arg.
+ * @param size Size of the optList. (Behaviour undefined if this is wrong)
+ */
 void command_setup(struct Command optList[], size_t size);
+
+/**
+ * Parse the given input line and executes any command found command.
+ * 
+ * New command and function vector should be set in the global optList.
+ * 
+ * @param input null-terminated string
+ * @param echoVector Callback with argument (cmd name, cmd args)
+ * @return 0 if no cmd prexis, 1 if something was executed
+ * 
+ */
 int command_execute(char * input, void (*echoVector)(char *, char *));
 
 #endif /* _DEV_COMMAND_H */

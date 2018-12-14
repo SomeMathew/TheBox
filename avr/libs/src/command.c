@@ -59,6 +59,9 @@ int command_execute(char * input, void (*echoVector)(char *, char *)) {
 	return 1;
 }
 
+/*
+ * @see command.h
+ */
 void command_setup(struct Command opts[], size_t size) {
 	optList = opts;
 	optSize = size;

@@ -127,7 +127,7 @@
 
 static void decodeReading(uint8_t * rawReading, struct lsm303_accel_reading * reading);
 
-/**
+/*
  * @see lsm303.h
  */
 int lsm303_init(enum lsm303_data_rate rate, enum lsm303_full_scale scale) {
@@ -143,6 +143,9 @@ int lsm303_init(enum lsm303_data_rate rate, enum lsm303_full_scale scale) {
 	return 1;
 }
 
+/*
+ * @see lsm303.h
+ */
 int lsm303_set_interrupt(uint8_t threshold, uint8_t duration) {
 	uint8_t ctrlRegValue;
 	
@@ -153,10 +156,6 @@ int lsm303_set_interrupt(uint8_t threshold, uint8_t duration) {
 	// Latch interrupt on INT1
 	ctrlRegValue = _BV(LSM303_LIR_INT1);
 	i2c_master_write(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_CTRL_REG5_A, &ctrlRegValue, 1);
-	
-	// Set interrupt active low
-	//~ ctrlRegValue = _BV(LSM303_H_LACTIVE);
-	//~ i2c_master_write(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_CTRL_REG6_A, &ctrlRegValue, 1);
 	
 	// OR combination
 	// YHigh and X High
@@ -171,9 +170,12 @@ int lsm303_set_interrupt(uint8_t threshold, uint8_t duration) {
 	ctrlRegValue = duration & (0b01111111);
 	i2c_master_write(LSM303DLHC_ADDRESS_LIN_ACCEL, LSM303_REGISTER_ACCEL_INT1_DURATION_A, &ctrlRegValue, 1);
 	
-	return 0;
+	return 1;
 }
 
+/*
+ * @see lsm303.h
+ */
 int lsm303_clear_latched_interrupt() {
 	uint8_t readValue;
 	
@@ -183,7 +185,7 @@ int lsm303_clear_latched_interrupt() {
 	return readValue;
 }
 
-/**
+/*
  * @see lsm303.h
  */
 int lsm303_read(struct lsm303_accel_reading * reading) {
@@ -196,7 +198,6 @@ int lsm303_read(struct lsm303_accel_reading * reading) {
 
 	reading->rawStatus = rawReading[0];
 	
-	//~ fprintf(&uartStream, "Raw:, val: %"PRIx8", xl: %"PRIx8", xh: %"PRIx8", yl: %"PRIx8", yh: %"PRIx8", zl: %"PRIx8", zh:%"PRIx8"\n", rawReading[0],rawReading[1],rawReading[2],rawReading[3],rawReading[4],rawReading[5], rawReading[6]);
 	// Check if the data is valid
 	if (rawReading[0] & _BV(LSM303_ZYXDA)) {
 		decodeReading(rawReading, reading); 

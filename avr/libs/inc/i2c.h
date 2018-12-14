@@ -87,7 +87,7 @@ int i2c_master_write(uint8_t addr8, uint8_t reg, uint8_t *dataBuffer, size_t siz
 
 
 /**
- * Attach an interrupt vector to be called when configured as i2c and that
+ * Attach an interrupt vector to be called when configured as slave and that
  * the device SLA+R is called.
  * 
  * This interrupt should be used to then feed data to the i2c with 

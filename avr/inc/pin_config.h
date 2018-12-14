@@ -1,3 +1,7 @@
+/**
+ * Global definitions of the GPIO used in this project.
+ */
+
 #ifndef _DEV_IO_CONFIG_H
 #define _DEV_IO_CONFIG_H
 

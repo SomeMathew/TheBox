@@ -8,8 +8,6 @@
 #include "spi.h"
 #include "ioctl.h"
 
-#define OUTPUT_BUFFER_SIZE 8
-
 #define STATE_OFF 			(0)
 #define STATE_WAIT 			(1)
 #define STATE_CMD_SENT 		(2)
@@ -182,7 +180,7 @@ static void checkAndCallVector(uint8_t cmd) {
  * 
  * This will be called if the callback are not reimplemented for use.
  */
-int spicmd_callback_unlockopen(void) {
+int __attribute__((weak)) spicmd_callback_unlockopen(void) {
 	return -1;
 }
 
@@ -191,7 +189,7 @@ int spicmd_callback_unlockopen(void) {
  * 
  * This will be called if the callback are not reimplemented for use.
  */
-int spicmd_callback_closelock(void) {
+int __attribute__((weak)) spicmd_callback_closelock(void) {
 	return -1;
 }
 
@@ -200,6 +198,6 @@ int spicmd_callback_closelock(void) {
  * 
  * This will be called if the callback are not reimplemented for use.
  */
-int spicmd_callback_checkstatus(void) {
+int __attribute__((weak)) spicmd_callback_checkstatus(void) {
 	return -1;
 }

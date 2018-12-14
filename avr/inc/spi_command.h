@@ -1,3 +1,18 @@
+/**
+ * This module implements the communication interface between the
+ * AVR and the BBB.
+ * 
+ * It uses a combination of SPI and an active low tri-stated GPIO
+ * to signal available command or status to the BBB. These can then
+ * be clocked out of the AVR by the BBB when convenient.
+ * 
+ * This implementation requires the use of the spi.h device driver
+ * and uses interrupts to manage the SPI peripheral as Slave.
+ * 
+ * Required GPIO definition in pin_config.h: 
+ * 		BBB_STATUS_DDR, BBB_STATUS_PORT, BBB_STATUS_PIN, BBB_STATUS_IO
+ */
+
 #ifndef _DEV_SPI_CMD_H
 #define _DEV_SPI_CMD_H
 
@@ -14,6 +29,8 @@
 #define SPICMD_ERR_BUSY 		(0xFD)
 #define SPICMD_ERR_UNEXPECTED 	(0xFB)
 #define SPICMD_ERR_NOTINIT 		(0xFC)
+
+#define OUTPUT_BUFFER_SIZE 8
 
 
 /**
@@ -37,9 +54,8 @@ int spicmd_init();
  */
 int spicmd_send(uint8_t cmd);
 
-
-int spicmd_callback_unlockopen(void) __attribute__((weak));
-int spicmd_callback_closelock(void) __attribute__((weak));
-int spicmd_callback_checkstatus(void) __attribute__((weak));
+int spicmd_callback_unlockopen(void);
+int spicmd_callback_closelock(void);
+int spicmd_callback_checkstatus(void);
 
 #endif /* _DEV_SPI_CMD_H */

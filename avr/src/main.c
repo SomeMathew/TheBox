@@ -35,6 +35,10 @@ static void isOpen();
 static void bbbOpen();
 static void bbbClose();
 
+/**
+ * Lists of UART command vectors used to debug and manually operate
+ * the system.
+ */
 static struct Command optList[] = {
   {"ping", pong, true}, // Alive check and debug
   {"moveA", moveA, true},
@@ -109,16 +113,25 @@ static void processSerialInput(void) {
 	}
 }
 
+/**
+ * Sends a command to the BBB using SPI and the Status GPIO.
+ */
 static void sendToBBB(char * arg) {
 	uint8_t i = atoi(arg);
 	fprintf(&uartStream, "sending! %" PRIx8 "\n", i);
 	spicmd_send(i);
 }
 
+/**
+ * Displays the current raw alert status to UART.
+ */
 static void alertstatus(char * arg) {
 	fprintf(&uartStream, "Status: %"PRIx8 "\n", alert_getstatus());
 }
 
+/**
+ * Reads and displays the accelerometer reading to UART.
+ */
 static void readAccel(char * arg) {
 	struct lsm303_accel_reading reading;
 	
@@ -127,6 +140,9 @@ static void readAccel(char * arg) {
 }
 
 
+/**
+ * Clears and displays the accelerometer interrupt status.
+ */
 static void clearAccelInt(char * arg) {
 	uint8_t src = lsm303_clear_latched_interrupt();
 	
@@ -161,17 +177,23 @@ static void moveB(char * arg) {
 }
 
 /**
- * Moves servo on channel A to desired angle
+ * Prints to UART if the box is opened.
  */
 static void isOpen() {
 	fprintf(&uartStream, "Is switch open? %d\n", box_isOpen());
 	// spicmd_callback_checkstatus();
 }
 
+/**
+ * Unlocks and opens the box.
+ */
 static void bbbOpen() {
 	spicmd_callback_unlockopen();
 }
 
+/**
+ * Closes and locks the box
+ */
 static void bbbClose() {
 	spicmd_callback_closelock();
 }

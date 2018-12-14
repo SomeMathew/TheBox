@@ -31,7 +31,7 @@ volatile int timerCount = 0;
  * This will clear any pending interrupt on the LSM303 and enables
  * the EXTINT0 interrupt.
  */
-static inline void arm_alert() {
+static inline void armAlert() {
 	lsm303_clear_latched_interrupt();
 
 	// Enable interrupt 0 
@@ -59,7 +59,7 @@ static inline void disableAlertInterrupt() {
  * 
  * Clears pending interrupt on the LSM303 and disables EXTINT0 interrupt.
  */
-static inline void disarm_alert() {
+static inline void disarmAlert() {
 	disableAlertInterrupt();
 	ATOMIC_BLOCK(ATOMIC_FORCEON) {
 		alarmState = ALERT_STATE_DISARMED;
@@ -78,10 +78,10 @@ uint8_t alert_getstatus() {
  */
 void alert_run(uint8_t run) {
 	if ((alarmState == ALERT_STATE_DISARMED || alarmState == ALERT_STATE_OK) && run == ALERT_RUN_ARMED) {
-		arm_alert();
+		armAlert();
 		alarmState = run;
 	} else if (alarmState == ALERT_STATE_ARMED && run == ALERT_RUN_DISARM) {
-		disarm_alert();
+		disarmAlert();
 		alarmState = run;
 	}
 }
@@ -97,7 +97,7 @@ int alert_init() {
 	// Wait for the lsm303 to stabilize otherwise we get a false interrupt
 	_delay_ms(ALERT_INIT_DELAY_MS);
 	
-	// EICRA already at 00 for active low interrupt on INT0
+	// Int on rising edge.
 	EICRA |= _BV(ISC00) | _BV(ISC01);
 	
 	alarmState = ALERT_STATE_OK;

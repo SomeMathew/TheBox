@@ -1,11 +1,23 @@
 /**
- * SPI driver for atmega328P, Master mode only. The SPI bus must be first initialized with a call to
- * spi_open(), and each device must have a struct deviceConfig initialized with spi_ioctl_setDevice(). 
- * Before a write transaction the bus must be configured with the given device's config struct 
- * using ioctl_setBus(). 
+ * SPI driver for atmega328P, Master polling and Slave poll/interrupt 
+ * mode supported. The
  * 
- * At present this driver provides limited support for multiple device on the bus. If needed, a lock
- * mechanism must be handled by the application program.
+ * For Master: 
+ * 		SPI bus must be first initialized with a call to spi_open_master(), 
+ * 		and each device must have a struct deviceConfig initialized 
+ * 		with spi_ioctl_setDevice(). 
+ * 		Before a write transaction the bus must be configured with 
+ * 		the given device's config struct using ioctl_setBus(). 
+ * 
+ * For Slave :
+ * 		Initialize the driver with spi_open_slave() with a vector for
+ * 		interrupt, null for polling. Then use the slave communication
+ * 		IT or Polling as required. 
+ * 		Note: The vector for interrupt mode is called during the ISR.
+ * 
+ * This driver provides limited support for multiple device on the bus. 
+ * If needed, a lock mechanism must be handled by the application 
+ * program.
  */
  
 #ifndef _DEV_SPI_H

@@ -12,6 +12,7 @@ def send_alert(path_to_image, movement):
     email_password = 'password'
     email_send = 'someone@gmail.com'
 
+    #Email subject header and email body text
     subject = ''
     body = ''
 

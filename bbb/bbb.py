@@ -6,6 +6,7 @@ import Adafruit_BBIO.SPI as SPI
 import sys
 import subprocess
 from usb_cam import take_picture_and_recognize
+from usb_cam import take_picture
 from send_email import send_alert
 
 from Adafruit_BBIO.SPI import SPI
@@ -13,6 +14,9 @@ from Adafruit_BBIO.SPI import SPI
 #Bash Script to cofigure pins for SPI
 subprocess.call(['/var/lib/cloud9/theBox/spi.sh'])
 
+# Lists to store the known images and known encodings so everytime after the 1st pass we don't need to load them
+known_images = []
+known_encodings = []
 
 # spi = SPI(bus, device) #/dev/spidev<bus>.<device>
 # spi = SPI (0,0) #dev/spidev1.0
@@ -124,7 +128,7 @@ def cmd_open_box():
     red_led_off()
     green_led_off()
     # where it is checked, picture is taken and sent for confirmation of a match
-    if take_picture_and_recognize():
+    if take_picture_and_recognize(known_images, known_encodings):
         print("Match found. Opening box!")
         # send command to open the box
         spi.xfer2([openBox])
@@ -186,6 +190,7 @@ def cmd_get_status():
         spi.xfer2([statusGPIO])
         if alertStatus == spi_response([0]):
             # we send an alert to user via email
+            take_picture()
             send_alert("/var/lib/cloud9/theBox/unknown.jpg",1)
             print("Sending email alert...")
 
